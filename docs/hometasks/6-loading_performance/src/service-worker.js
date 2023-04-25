@@ -1,41 +1,12 @@
 // Here make implementation of service worker
-self.addEventListener('install', function(e) {
-  console.log('Install Event:', e);
+import { clientsClaim } from 'workbox-core';
+import { precacheAndRoute } from 'workbox-precaching';
 
-  e.waitUntil(
-    caches.open('mysite-static-v3').then(
-      function (cache) {
-        return cache.addAll([
-          '/',
-          '/index.html',
-          '/index.js',
-          '/styles/style.scss',
-        ]);
-      }
-    ),
-  );
-});
+// This clientsClaim() should be at the top level
+// of your service worker, not inside of, e.g.,
+// an event handler.
+clientsClaim();
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        } else {
-          return fetch(event.request)
-            .then(res => {
-              return caches.open('dynamic')
-                .then(cache => {
-                  cache.put(event.request.url, res.clone());
-                  return res;
-                })
-            });
-        }
-      })
-  );
-});
+self.skipWaiting();
 
-self.addEventListener('activate', function(e) {
-  console.log('Activate Event:', e);
-});
+precacheAndRoute(self.__WB_MANIFEST);
