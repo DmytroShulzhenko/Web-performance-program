@@ -1,28 +1,43 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-    mode: 'development',
-    entry: path.resolve(__dirname, 'src/js/index.js'),
-    output: {
-        filename: 'shared.bundle.js',
+  mode: "development",
+  entry: {
+    index: {
+      import: "./src/js/index.js",
+      filename: "js/shared.bundle.js"
     },
-    module: {
-        rules: [
-            {
-                test: /\.html$/i,
-                loader: "html-loader",
-            },
-        ],
+    page1: {
+      import: "./src/js/pages/page1.js",
+      filename: "js/pages/[name].bundle.js",
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: "./src/page1.html",
-            filename: `page1.html`
-        }),
-        new HtmlWebpackPlugin({
-            template: "./src/page2.html",
-            filename: `page2.html`
-        }),
+    page2: {
+      import: "./src/js/pages/page2.js",
+      filename: "js/pages/[name].bundle.js",
+    },
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
     ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: "page1.html",
+      template: "./src/page1.html",
+      chunks: [ "index", "page1" ]
+    }),
+    new HtmlWebpackPlugin({
+      filename: "page2.html",
+      template: "./src/page2.html",
+      chunks: [ "index", "page2" ]
+    }),
+  ],
 };
